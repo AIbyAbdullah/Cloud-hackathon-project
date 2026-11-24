@@ -1,0 +1,40 @@
+✅ Stage 1 Raw Load: 12 tables
+   employees 1316, biometric 345280, payroll 53617...
+
+✅ Stage 2 Staging Clean:
+   employees 1266 (50 dup removed)
+   biometric 322318 + rejected 6784 (2-min dedup 16178)
+
+✅ Stage 3 Attendance Daily:
+   254814 daily rows (36402 weeks x 7)
+   Present 142k, Absent 73k, Missing 24k, Holiday 14k
+
+✅ Stage 4 Warehouse Star Schema SCD2:
+   dim_department 25, dim_shift 4, dim_date 217
+   dim_employee 3686 SCD2 (valid_to = next record -1 day)
+   fact_attendance_daily 254814
+   fact_overtime_approved 19666
+   fact_payroll_line 53617
+
+✅ Stage 5 Analytics 10/10 CSV:
+   Q01 6 months headcount 1213->1197
+   Q04 Top late E10670 143 days
+   Q05 July OT 63471 hrs peak
+   Q07 5 paid with zero attendance
+   Q08 20 paid after separation
+
+✅ Stage 6 DQ Checks:
+   PK Unique 0 ✅
+   Ref Integrity 0 ✅
+   Reconciliation 16178 = 2-min dedup (Expected!)
+   Business Sanity 4265 = Night shifts >16 hrs (Check)
+   Accepted values 0 ✅
+
+
+
+
+
+DQ Reconciliation 16178 Kya Hai?
+
+Raw 345280 = Staging 322318 + Rejected 6784 + Deduped 16178
+345280 = 322318 + 6784 + 16178 ✅
